@@ -1,0 +1,24 @@
+
+[
+  {
+    "id": 1,
+    "text": "create react app",
+    "date": "1.30.2022"
+  },
+  {
+    "id": 2,
+    "text": "tie into mock server",
+    "date": "1.30.2022"
+  },
+  {
+    "id": 3,
+    "text": "update api",
+    "date": "1.30.2022"
+  },
+  {
+    "id": 4,
+    "text": "update database queries",
+    "date": "1.30.2022"
+  }
+]
+

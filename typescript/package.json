@@ -1,0 +1,36 @@
+{
+  "name": "bujo-ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server:start": "ts-node index.ts",
+    "server:start:watch": "ts-node-dev --respawn --watch queries -- index.ts",
+    "typecheck:watch": "tsc --watch --noEmit",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@koa/cors": "^4.0.0",
+    "@koa/router": "^12.0.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.3",
+    "jsonwebtoken": "^9.0.0",
+    "koa": "^2.14.1",
+    "koa-bodyparser": "^4.3.0",
+    "koa-mount": "^4.0.0",
+    "pg": "^8.8.0",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.1",
+    "@types/koa": "^2.13.5",
+    "@types/koa__cors": "^3.3.0",
+    "@types/koa__router": "^12.0.0",
+    "@types/koa-bodyparser": "^4.3.10",
+    "@types/koa-mount": "^4.0.2",
+    "@types/pg": "^8.6.6",
+    "ts-node-dev": "^2.0.0"
+  }
+}
