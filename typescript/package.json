@@ -31,6 +31,7 @@
     "@types/koa-bodyparser": "^4.3.10",
     "@types/koa-mount": "^4.0.2",
     "@types/pg": "^8.6.6",
+    "prisma": "^4.11.0",
     "ts-node-dev": "^2.0.0"
   }
 }

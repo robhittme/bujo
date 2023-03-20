@@ -27,3 +27,14 @@ CREATE TABLE Sessions (
   created_timestamp BIGINT NOT NULL DEFAULT (extract(epoch from now())),
   modified_timestamp BIGINT NOT NULL DEFAULT (extract(epoch from now()))
 );
+
+CREATE TABLE Collections (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  created_timestamp BIGINT NOT NULL DEFAULT (extract(epoch from now()))
+);
+
+CREATE TABLE Collection_entries (
+  collection_id INT,
+  entry_id INT
+);

@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import './App.css';
 
 import Header from './components/Header';
-import Login from './components/Login';
+//import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 
 function App() {
@@ -11,7 +11,6 @@ function App() {
     <div className="container">
       <Header />
       <Routes>
-        <Route path="/*" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
     </Routes>
     </div>

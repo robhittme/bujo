@@ -4,6 +4,10 @@ import { join as joinPaths } from 'path';
 import { Pool, QueryResult } from 'pg';
 
 
+export type Collection = {
+  name: string
+}
+
 export type Entry = {
   id: number,
   text: string,
@@ -37,13 +41,15 @@ const atLeastOneRowImpactedByStatementOrError = <T extends QueryResult>(result: 
 };
 
 export type Db = {
-  getEntries: () => Promise<any>,
+  getEntries: (start: number, end: number) => Promise<any>,
   getEntry: (id: string) => Promise<any>,
   getUser: (uid: string, passwordHash: string) => Promise<User>,
   getSessionToken: (token: string) => Promise<any>,
   addEntry: (entry: any) => Promise<Entry>,
+  addEntryToCollection: (entryId: number, collectionId: number) => Promise<Entry>,
+  addCollection: (collection: any) => Promise<Collection>,
   createUser: (user: any) => Promise<any>,
-  updateEntry: (entryId: number, text: string|null, entryCompleted: string|null, entryType: string|null, deadline: number | null, priority: boolean | null) => Promise<Entry>,
+  updateEntry: (entryId: number, text: string|null, entryCompleted: string|null, entryType: string|null, priority: boolean | null) => Promise<Entry>,
   deleteEntry: (entryId: number) => Promise<void>
   validateUser: (username: string, passwordHash: string) => Promise<any>
 };
@@ -64,14 +70,17 @@ export const Db = (pool: Pool): Db => {
   assert(queries.getEntry);
   assert(queries.getSessionToken);
   assert(queries.addEntry);
+  assert(queries.addCollection);
   assert(queries.updateEntry);
   assert(queries.deleteEntry);
   assert(queries.createUser);
   assert(queries.validateUser);
   assert(queries.getUser);
   return {
-    getEntries: async (): Promise<any> => {
-      return pool.query(queries.getEntries)
+    getEntries: async (start: number, end: number): Promise<any> => {
+      const startTime = start || 0;
+      const endTime = end || Math.floor(Date.now() / 1000);
+      return pool.query(queries.getEntries, [startTime, endTime])
         .then(extractRows)
         .then((raw: any) => {
           return raw
@@ -110,8 +119,25 @@ export const Db = (pool: Pool): Db => {
           return raw;
         });
     },
-    updateEntry: async (entryId: number, text: string|null, entryCompleted: string|null, entryType: string|null, deadline: number|null, priority:boolean|null): Promise<Entry> => {
-      const params = [entryId, text, entryCompleted, entryType, deadline, priority];
+    addEntryToCollection: async (entryId: number, collectionId: number): Promise<any> => {
+      return pool.query(queries.addEntryToCollection, [entryId, collectionId])
+        .then(extractRows)
+        .then(headOrError)
+        .then(raw => {
+          return raw;
+        });
+    },
+    addCollection: async (collection: any): Promise<any> => {
+      const { name } = collection;
+      return pool.query(queries.addCollection, [name])
+        .then(extractRows)
+        .then(headOrError)
+        .then(raw => {
+          return raw;
+        });
+    },
+    updateEntry: async (entryId: number, text: string|null, entryCompleted: string|null, entryType: string|null, priority:boolean|null): Promise<Entry> => {
+      const params = [entryId, text, entryCompleted, entryType, priority];
       return pool.query(queries.updateEntry, params)
         .then(atLeastOneRowImpactedByStatementOrError)
         .then(extractRows)

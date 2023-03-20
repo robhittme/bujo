@@ -2,8 +2,8 @@ import * as Koa from 'koa';
 import { Context, DefaultState } from 'koa';
 import * as Router from '@koa/router';
 import * as cors from '@koa/cors';
-import { authorizationMiddleware, authenticationMiddleware } from './auth.service';
-import type { Db, Entry } from './lib';
+//import { authorizationMiddleware, authenticationMiddleware } from './auth.service';
+import type { Db, Entry, Collection } from './lib';
 
 const entryTypeConverter = (text: string): Array<string> => {
   const [sym, ...rest] = text.split('');
@@ -23,7 +23,11 @@ export const init = (db: Db): Koa => {
   const router = new Router<DefaultState, Context>();
 
   router.get('/entries', async (ctx: Koa.Context) => {
-    const entries = await db.getEntries();
+    const query = ctx.query;
+    const start = Number(query.start) || 0;
+    const end = Number(query.end) || Math.floor(Date.now() / 1000);
+    const entries = await db.getEntries(start, end);
+
     ctx.response.body = entries;
     ctx.response.status = 200;
   });
@@ -38,7 +42,7 @@ export const init = (db: Db): Koa => {
   router.delete('/entry/:id', async (ctx: Koa.Context) => {
     try {
       const entryId = ctx.params.id;
-      const deleted= await db.deleteEntry(entryId);
+      await db.deleteEntry(entryId);
       ctx.response.status = 204;
     } catch(error) {
       ctx.response.status = 500;
@@ -79,9 +83,39 @@ export const init = (db: Db): Koa => {
     }
 
   })
+
+  router.post('/collection/:collectionId/entry/:entryId', async (ctx: Koa.Context) => {
+    try {
+      const collectionId = ctx.params.collectionId; 
+      const entryId = ctx.params.entryId;
+      const newEntryInCollection = await db.addEntryToCollection(entryId, collectionId)
+      ctx.response.body = newEntryInCollection 
+      ctx.response.status = 200;
+    } catch (error) {
+      ctx.response.status = 500;
+      ctx.response.body = error;
+      console.log(error)
+    }
+
+  })
+
+  router.post('/collection', async (ctx: Koa.Context) => {
+    try {
+      const entry = ctx.request.body as Collection;
+      const [entryType, text] = entryTypeConverter(entry.name);
+      const newEntry = await db.addCollection({name})
+      ctx.response.body = newEntry;
+      ctx.response.status = 200;
+    } catch (error) {
+      ctx.response.status = 500;
+      ctx.response.body = error;
+      console.log(error)
+    }
+
+  })
   app.use(cors())
-    .use(authorizationMiddleware(db))
-    .use(authenticationMiddleware)
+    //.use(authorizationMiddleware(db))
+    //.use(authenticationMiddleware)
     .use(require('koa-bodyparser')())
     .use(router.routes())
     .use(router.allowedMethods());
