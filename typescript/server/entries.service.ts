@@ -57,9 +57,8 @@ export const init = (db: Db): Koa => {
       const bodyText = body.text || null;
       const bodyEntryCompleted = body.completed || false;;
       const bodyEntryType = body.entryType || null;
-      const bodyDeadline = body.deadline || null;
       const bodyPriority = body.priority || null;
-      const newEntry = await db.updateEntry(entryId, bodyText, bodyEntryCompleted, bodyEntryType, bodyDeadline, bodyPriority)
+      const newEntry = await db.updateEntry(entryId, bodyText, bodyEntryCompleted, bodyEntryType, bodyPriority)
       ctx.response.body = newEntry;
       ctx.response.status = 200;
     } catch (error) {
